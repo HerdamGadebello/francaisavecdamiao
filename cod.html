@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Français avec Damião</title>
+    <style>
+        /* Estilos consolidados (removidas duplicações) */
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Roboto:wght@300;400;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            margin: 0;
+            font-family: 'Roboto', sans-serif;
+            color: #ffffff;
+            line-height: 1.6;
+            background: url('eiffel-tower-at-sunset-paris-france-uhd-4k-wallpaper.jpg') no-repeat center center fixed;
+            background-size: cover;
+            position: relative;
+            z-index: 0;
+        }
+        
+        .background-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.4);
+            z-index: 1;
+        }
+        
+        #login-screen, .content, #conteudo {
+            position: relative;
+            z-index: 2;
+        }
+        
+        /* Restante do CSS organizado... */
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Montserrat:wght@700&display=swap" rel="stylesheet"/>
+</head>
+<body>
+    <div class="background-overlay"></div>
+    <button id="toggle-theme">🌙 Modo Escuro</button>
+    
+    <!-- Tela de Login -->
+    <div id="login-screen">
+        <img alt="Logo Français avec Damião" src="logo2-Photoroom.png" class="logo"/>
+        <div class="login-options">
+            <button id="login-aluno">Entrar como Aluno</button>
+            <div id="login-professor">
+                <input id="senha-professor" placeholder="Senha do Professor" type="password"/>
+                <button id="entrar-professor">Entrar como Professor</button>
+                <p class="erro" id="erro-login"></p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Conteúdo Principal -->
+    <div id="conteudo">
+        <header>
+            <img alt="Logo Français avec Damião" src="logo2-Photoroom.png" class="logo-header"/>
+            <h1>Français avec Damião</h1>
+            <p>Exercícios semanais para prática de francês</p>
+        </header>
+        
+        <main>
+            <!-- Sistema de Abas -->
+            <div class="tab-system">
+                <div class="tab-buttons">
+                    <button class="tab-button active" data-tab="aulas">Aulas</button>
+                    <button class="tab-button" data-tab="exercicios">Exercícios</button>
+                    <button class="tab-button" data-tab="anexos">Anexos</button>
+                </div>
+                
+                <div class="tab-content active" id="aulas">
+                    <h2>Aulas</h2>
+                    <div id="lista-modulos"></div>
+                </div>
+                
+                <div class="tab-content" id="exercicios">
+                    <h2>Exercícios</h2>
+                    <p>Lista de exercícios ou interações.</p>
+                </div>
+                
+                <div class="tab-content" id="anexos">
+                    <h2>Anexos</h2>
+                    <p>Arquivos e materiais complementares.</p>
+                </div>
+            </div>
+        </main>
+        
+        <footer>
+            <p>© 2025 - Français avec Damião</p>
+        </footer>
+    </div>
+
+    <script>
+        // JavaScript otimizado
+        document.addEventListener('DOMContentLoaded', () => {
+            // Elementos DOM
+            const elements = {
+                loginScreen: document.getElementById('login-screen'),
+                conteudo: document.getElementById('conteudo'),
+                loginAluno: document.getElementById('login-aluno'),
+                entrarProfessor: document.getElementById('entrar-professor'),
+                senhaProfessor: document.getElementById('senha-professor'),
+                erroLogin: document.getElementById('erro-login'),
+                listaModulos: document.getElementById('lista-modulos'),
+                tabButtons: document.querySelectorAll('.tab-button')
+            };
+            
+            // Constantes
+            const SENHA_PROFESSOR = 'Aletei4f!los';
+            
+            // Estado da aplicação
+            const state = {
+                modulos: JSON.parse(localStorage.getItem('modulos')) || [],
+                isProfessor: false
+            };
+            
+            // Funções
+            function renderizarModulos() {
+                elements.listaModulos.innerHTML = state.modulos.map((modulo, index) => `
+                    <div class="modulo">
+                        <h3>${modulo.titulo}</h3>
+                        <p>${modulo.descricao}</p>
+                        <div class="exercicios">${modulo.exercicios}</div>
+                        ${state.isProfessor ? `<button onclick="removerModulo(${index})">Remover</button>` : ''}
+                    </div>
+                `).join('');
+            }
+            
+            // Event Listeners
+            elements.loginAluno.addEventListener('click', () => {
+                elements.loginScreen.style.display = 'none';
+                elements.conteudo.style.display = 'block';
+                state.isProfessor = false;
+                renderizarModulos();
+            });
+            
+            elements.entrarProfessor.addEventListener('click', () => {
+                if (elements.senhaProfessor.value === SENHA_PROFESSOR) {
+                    elements.loginScreen.style.display = 'none';
+                    elements.conteudo.style.display = 'block';
+                    state.isProfessor = true;
+                    renderizarModulos();
+                } else {
+                    elements.erroLogin.textContent = 'Senha incorreta!';
+                }
+            });
+            
+            // Sistema de abas
+            elements.tabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    // Remove classe active de todos
+                    document.querySelectorAll('.tab-button, .tab-content').forEach(el => {
+                        el.classList.remove('active');
+                    });
+                    
+                    // Adiciona classe active ao botão e conteúdo selecionado
+                    const tabId = button.getAttribute('data-tab');
+                    button.classList.add('active');
+                    document.getElementById(tabId).classList.add('active');
+                });
+            });
+            
+            // Toggle tema
+            document.getElementById('toggle-theme').addEventListener('click', () => {
+                document.documentElement.classList.toggle('dark-mode');
+            });
+        });
+    </script>
+</body>
+</html>
